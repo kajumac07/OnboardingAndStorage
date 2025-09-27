@@ -10,10 +10,12 @@ import SwiftUI
 //MARK: Main Screen
 struct OnboardingView: View {
 
-    @State var onBoardingState: Int = 3
-    @State var nameTextField:  String = ""
-    @State var age:Double = 50
+    @State var onBoardingState: Int = 0
+    @State var nameTextField: String = ""
+    @State var age: Double = 50
     @State var gender: String = ""
+    @State var alertTitle: String = ""
+    @State var showAlert: Bool = false
 
     var body: some View {
         ZStack {
@@ -42,11 +44,16 @@ struct OnboardingView: View {
             }
             .padding()
         }
+        .alert("Alert!", isPresented: $showAlert, presenting: alertTitle) { title in
+            Button("OK", role: .cancel) { }
+        } message: { title in
+            Text("Alert for: \(title)")
+        }
     }
 }
 
 #Preview {
-    OnboardingView()
+    OnboardingView().background(.blue)
 }
 
 //MARK: Components
@@ -54,16 +61,20 @@ extension OnboardingView {
 
     //bottom button
     private var bottomButton: some View {
-        Text("SignIn")
-            .font(.headline)
-            .foregroundStyle(.white)
-            .frame(height: 55)
-            .frame(maxWidth: .infinity)
-            .background(.red)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-            .onTapGesture {
-                //do something
-            }
+        Text(
+            onBoardingState == 0
+                ? "Sign up" : onBoardingState == 3 ? "Finish" : "Next"
+        )
+        .font(.headline)
+        .foregroundStyle(.white)
+        .frame(height: 55)
+        .frame(maxWidth: .infinity)
+        .background(.red)
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .onTapGesture {
+            //do something
+            handleNextButtonPressed()
+        }
     }
 
     //welcome
@@ -73,18 +84,18 @@ extension OnboardingView {
             Image(systemName: "heart.text.square.fill")
                 .resizable()
                 .frame(width: 200, height: 200)
-                .foregroundStyle(.red)
+                .foregroundStyle(.white)
 
             Text("Find your match")
                 .font(.largeTitle)
                 .fontWeight(.semibold)
-                .foregroundStyle(.red)
+                .foregroundStyle(.white)
 
             Text(
                 "This is the #1 app for finding your match online! In this tutorial we are practicing using AppStorage and other SwiftUI technique."
             )
             .fontWeight(.medium)
-            .foregroundStyle(.red)
+            .foregroundStyle(.white)
             Spacer()
             Spacer()
         }
@@ -99,20 +110,20 @@ extension OnboardingView {
             Text("What's Your Name.")
                 .font(.largeTitle)
                 .fontWeight(.semibold)
-                .foregroundStyle(.red)
-            
+                .foregroundStyle(.white)
+
             TextField("Enter your Name", text: $nameTextField)
                 .font(.headline)
                 .frame(height: 50)
-                .padding(.horizontal,20)
-                .background(.gray).opacity(0.3)
+                .padding(.horizontal, 20)
+                .background(.white)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
             Spacer()
             Spacer()
         }
         .padding(30)
     }
-    
+
     //age section
     private var addAgeSection: some View {
         VStack(spacing: 20) {
@@ -120,23 +131,21 @@ extension OnboardingView {
             Text("What's Your Age.")
                 .font(.largeTitle)
                 .fontWeight(.semibold)
-                .foregroundStyle(.red)
-            
+                .foregroundStyle(.white)
+
             Text("\(String(format: "%.0f", age))")
                 .font(.largeTitle)
                 .fontWeight(.semibold)
-                .foregroundStyle(.red)
-            
-            Slider(value: $age, in: 18...100,step: 1)
-                .accentColor(.red)
+                .foregroundStyle(.white)
+
+            Slider(value: $age, in: 18...100, step: 1)
+                .accentColor(.white)
             Spacer()
             Spacer()
         }
         .padding(30)
     }
 
-    
-    
     //gender section
     private var addGenderSection: some View {
         VStack(spacing: 20) {
@@ -144,15 +153,15 @@ extension OnboardingView {
             Text("What's Your Gender.")
                 .font(.largeTitle)
                 .fontWeight(.semibold)
-                .foregroundStyle(.red)
+                .foregroundStyle(.white)
             Picker(selection: $gender) {
                 Text("Male").tag("Male")
                 Text("Female").tag("Female")
-                
+
             } label: {
                 Text("Select Gender")
                     .font(.title)
-                    .foregroundStyle(.red)
+                    .foregroundStyle(.white)
             }
             .pickerStyle(WheelPickerStyle())
 
@@ -162,4 +171,36 @@ extension OnboardingView {
         .padding(30)
     }
 
+}
+
+//MARK: Functions
+
+extension OnboardingView {
+    func handleNextButtonPressed() {
+        
+        //check inputs
+        switch onBoardingState {
+        case 1:
+            guard nameTextField.count >= 4 else {
+                showAlert(title: "Your name must be at least 4 characters long 😒")
+                return
+            }
+        default:
+            break
+        }
+        
+        if onBoardingState == 3 {
+            //sign in
+        } else {
+            withAnimation(.spring()) {
+                onBoardingState += 1
+            }
+        }
+    }
+    
+    
+    func showAlert(title:String){
+        alertTitle = title
+        showAlert.toggle()
+    }
 }

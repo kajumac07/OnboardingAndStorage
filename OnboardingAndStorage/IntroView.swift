@@ -28,9 +28,7 @@ struct IntroView: View {
                     .font(.largeTitle)
                     .foregroundColor(.white)
             } else {
-                Text("Onboarding View")
-                    .font(.largeTitle)
-                    .foregroundColor(.white)
+                OnboardingView()
             }
         }
     }
