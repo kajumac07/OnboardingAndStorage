@@ -10,12 +10,21 @@ import SwiftUI
 //MARK: Main Screen
 struct OnboardingView: View {
 
+    //onboarding inputs
     @State var onBoardingState: Int = 0
     @State var nameTextField: String = ""
     @State var age: Double = 50
-    @State var gender: String = ""
+    @State var gender: String = "Male"
+    
+    //for the alert
     @State var alertTitle: String = ""
     @State var showAlert: Bool = false
+    
+    //app storage
+    @AppStorage("name") var currentUserName: String?
+    @AppStorage("age")  var currentUserAge: Int?
+    @AppStorage("gender") var currentUserGender: String?
+    @AppStorage("signed_in") var currentUserSignedIn: Bool = false
 
     var body: some View {
         ZStack {
@@ -185,12 +194,17 @@ extension OnboardingView {
                 showAlert(title: "Your name must be at least 4 characters long 😒")
                 return
             }
+        case 3:
+            guard gender.count > 1 else {
+                showAlert(title: "Please select a gender before moving forward 💁🏻")
+                return
+            }
         default:
             break
         }
         
         if onBoardingState == 3 {
-            //sign in
+            signIn()
         } else {
             withAnimation(.spring()) {
                 onBoardingState += 1
@@ -198,7 +212,16 @@ extension OnboardingView {
         }
     }
     
+    //signin func
     
+    func signIn() {
+        currentUserName = nameTextField
+        currentUserAge = Int(age)
+        currentUserGender = gender
+        currentUserSignedIn = true
+    }
+    
+    //show alert func
     func showAlert(title:String){
         alertTitle = title
         showAlert.toggle()
