@@ -17,13 +17,21 @@ struct IntroView: View {
             )
             .ignoresSafeArea()
             
-           
-            //if user signed in -> Profile View
-            //else -> Onboarding View
             
-            Text("Intro Screen")
-                .font(.largeTitle)
-                .foregroundColor(.white)
+            
+             //if user signed in -> Profile View
+             //else -> Onboarding View
+            
+            
+            if currentUserSignedIn {
+                Text("Profile View")
+                    .font(.largeTitle)
+                    .foregroundColor(.white)
+            } else {
+                Text("Onboarding View")
+                    .font(.largeTitle)
+                    .foregroundColor(.white)
+            }
         }
     }
 }
